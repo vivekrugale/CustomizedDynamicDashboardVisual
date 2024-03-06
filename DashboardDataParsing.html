@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Data</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+
+    <style>
+      .global {
+        display: flex;
+        width: auto;
+        height: auto;
+        margin: auto;
+      }
+      .sideColumn {
+        display: grid;
+        row-gap: 2px;
+      }
+      .sideCorner {
+        height: 30px;
+        align-items: center;
+        margin-bottom: 4px;
+      }
+      .side,
+      .sideRowHead {
+        width: 115px;
+        height: 80px;
+      }
+      .sideRowHead {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        font-size: 11px;
+        font-weight: bold;
+        font-family: sans-serif;
+      }
+      .container {
+        display: grid;
+        grid-template-columns: 35px auto auto auto auto auto; /*Column width will depend on the content*/
+        width: 1100px;
+        height: auto;
+        row-gap: 2px;
+        font-family: sans-serif;
+        font-size: small;
+        text-align: center;
+      }
+      .columnHead-P {
+        background-color: #ffb5dc;
+      }
+      .columnHead-1,
+      .columnHead-2,
+      .columnHead-3 {
+        background-color: #fe56ae;
+      }
+      .columnHead-F {
+        background-color: #e20177;
+      }
+      .columnType-1 {
+        background-color: #ffdbed;
+      }
+      .columnType-2 {
+        background-color: #ffb5dc;
+      }
+      .columnType-3 {
+        background-color: #fe56ae;
+      }
+      .columnType-1,
+      .columnType-2,
+      .columnType-3 {
+        /*Flex properties for aligning content inside individual cell*/
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 80px;
+      }
+      .columnHead-P,
+      .columnHead-1,
+      .columnHead-2,
+      .columnHead-3,
+      .columnHead-F {
+        display: flex;
+        color: white;
+        font-weight: bold;
+        height: 30px;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 4px;
+        position: relative; /*This is for the pointer shapes on column heads*/
+      }
+      /*Column head pointer shapes START*/
+      .columnHead-1:after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 0;
+        height: 0;
+        border-left: 15px solid #ffb5dc;
+        border-top: 15px solid transparent;
+        border-bottom: 15px solid transparent;
+      }
+      .columnHead-2:after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 0;
+        height: 0;
+        border-left: 15px solid #fe56ae;
+        border-top: 15px solid transparent;
+        border-bottom: 15px solid transparent;
+      }
+      .columnHead-3:after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 0;
+        height: 0;
+        border-left: 15px solid #fe56ae;
+        border-top: 15px solid transparent;
+        border-bottom: 15px solid transparent;
+      }
+      .columnHead-F:after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 0;
+        height: 0;
+        border-left: 15px solid #fe56ae;
+        border-top: 15px solid transparent;
+        border-bottom: 15px solid transparent;
+      }
+      .columnHead-F:before {
+        content: "";
+        position: absolute;
+        right: -14.9px;
+        bottom: 0;
+        width: 0;
+        height: 0;
+        border-left: 15px solid #e20177;
+        border-top: 15px solid transparent;
+        border-bottom: 15px solid transparent;
+      }
+      /*END*/
+
+      .row,
+      .row4 {
+        /*Text design and orientation in row headers*/
+        height: 80px;
+        background-color: #fe56ae;
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        color: white;
+        font-weight: bold;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 90%;
+      }
+      .row4 {
+        height: 244px;
+        grid-row: 5/ 8; /*Last row head spans across 3 rows*/
+      }
+      .card1 {
+        position: relative; /*This is for handshake icon. Parent div is relative and handshake is absolute.*/
+        display: flex;
+        width: 110px;
+        height: 70px;
+        background-color: #3cdbc0;
+        flex-direction: column; /*Align items in a column*/
+        align-items: flex-start;
+        border-radius: 10px;
+        color: black;
+        padding: 1px 5px;
+        margin: 1px 2px;
+      }
+      .card2 {
+        position: relative;
+        display: flex;
+        width: 110px;
+        height: 70px;
+        background-color: #1b4198;
+        flex-direction: column;
+        align-items: flex-start;
+        border-radius: 10px;
+        color: white;
+        padding: 1px 5px;
+        margin: 1px 2px;
+      }
+      .card3 {
+        position: relative;
+        display: flex;
+        width: 110px;
+        height: 70px;
+        background-color: #54b948;
+        flex-direction: column; /*Align items in a column*/
+        align-items: flex-start;
+        border-radius: 10px;
+        color: white;
+        padding: 1px 5px;
+        margin: 1px 2px;
+      }
+      .card4 {
+        position: relative;
+        display: flex;
+        width: 110px;
+        height: 70px;
+        background-color: #e20177;
+        flex-direction: column;
+        align-items: flex-start;
+        border-radius: 10px;
+        color: white;
+        padding: 1px 5px;
+        margin: 1px 2px;
+      }
+      .card5 {
+        position: relative;
+        display: flex;
+        width: 110px;
+        height: 70px;
+        background-color: #009ddc;
+        flex-direction: column;
+        align-items: flex-start;
+        border-radius: 10px;
+        color: white;
+        padding: 1px 5px;
+        margin: 1px 2px;
+      }
+      .card6 {
+        position: relative;
+        display: flex;
+        width: 110px;
+        height: 70px;
+        background-color: #fedb00;
+        flex-direction: column;
+        align-items: flex-start;
+        border-radius: 10px;
+        color: black;
+        padding: 1px 5px;
+        margin: 1px 2px;
+      }
+      p {
+        line-height: 2.2;
+        margin: -5px 0 -5px 0;
+        font-size: 9px;
+      }
+      h4 {
+        line-height: 2.2;
+        margin: -5px 0 -3px 0;
+      }
+      .cardDescription {
+        width: 100px;
+        word-wrap: break-word;
+        font-size: 9px;
+        text-align: left;
+      }
+
+      #handshake {
+        height: 30px;
+        position: absolute;
+        top: 0px;
+        right: -15px;
+      }
+      .sideIcon {
+        height: 30px;
+        padding-right: 5px;
+      }
+      .index {
+        display: flex;
+        padding-top: 5px;
+        padding-left: 115px;
+        font-family: sans-serif;
+        align-items: center;
+      }
+      .collabIcon {
+        width: 35px;
+        padding-right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="global">
+      <div class="sideColumn">
+        <div class="sideCorner"></div>
+        <div class="side"></div>
+        <div class="side"></div>
+        <div class="side"></div>
+        <div class="sideRowHead">
+          <img class="sideIcon" src="contraception.png" alt="Contraception" />
+          Contraception
+        </div>
+        <div class="sideRowHead">
+          <img class="sideIcon" src="maternal.png" alt="Maternal" />
+          Maternal and Peripartun Conditions
+        </div>
+        <div class="sideRowHead">
+          <img src="conditions.png" alt="Conditions" class="sideIcon" />
+          Conditions Unique to Women
+        </div>
+      </div>
+      <div class="container">
+        <div class="blank"></div>
+
+        <div class="columnHead-P">Pre-phase 1</div>
+        <div class="columnHead-1">Phase 1</div>
+        <div class="columnHead-2">Phase 2</div>
+        <div class="columnHead-3">Phase 3</div>
+        <div class="columnHead-F">Fillings and Approvals</div>
+
+        <div class="row">Established Brands</div>
+        <div class="columnType-1" id="p0e"></div>
+        <div class="columnType-2" id="p1e"></div>
+        <div class="columnType-2" id="p2e"></div>
+        <div class="columnType-2" id="p3e"></div>
+        <div class="columnType-3" id="p4e"></div>
+
+        <div class="row">Biosimilars</div>
+        <div class="columnType-1" id="p0b"></div>
+        <div class="columnType-2" id="p1b"></div>
+        <div class="columnType-2" id="p2b"></div>
+        <div class="columnType-2" id="p3b"></div>
+        <div class="columnType-3" id="p4b"></div>
+
+        <div class="row">Fertility</div>
+        <div class="columnType-1" id="p0f"></div>
+        <div class="columnType-2" id="p1f"></div>
+        <div class="columnType-2" id="p2f"></div>
+        <div class="columnType-2" id="p3f"></div>
+        <div class="columnType-3" id="p4f"></div>
+
+        <div class="row4">Women's Health</div>
+        <div class="columnType-1" id="p0wc"></div>
+        <div class="columnType-2" id="p1wc"></div>
+        <div class="columnType-2" id="p2wc"></div>
+        <div class="columnType-2" id="p3wc"></div>
+        <div class="columnType-3" id="p4wc"></div>
+
+        <div class="columnType-1" id="p0wm"></div>
+        <div class="columnType-2" id="p1wm"></div>
+        <div class="columnType-2" id="p2wm"></div>
+        <div class="columnType-2" id="p3wm"></div>
+        <div class="columnType-3" id="p4wm"></div>
+
+        <div class="columnType-1" id="p0ww"></div>
+        <div class="columnType-2" id="p1ww"></div>
+        <div class="columnType-2" id="p2ww"></div>
+        <div class="columnType-2" id="p3ww"></div>
+        <div class="columnType-3" id="p4ww"></div>
+      </div>
+    </div>
+    <div class="index">
+      <img class="collabIcon" src="collab.png" alt="Collab" /> = Collaboration
+    </div>
+
+    <script>
+      console.log("First print");
+      let extract = async () => {
+        let workbook = XLSX.read(
+          await (await fetch("./data.xlsx")).arrayBuffer()
+        );
+        console.log(workbook);
+
+        rowWiseData = XLSX.utils.sheet_to_row_object_array(
+          workbook.Sheets["Portfolio Dashboard"]
+        );
+        // stringData = JSON.stringify(rowWiseData);
+        console.log(rowWiseData);
+
+        //Selecting HTML IDs
+        const p0e = document.querySelector("#p0e"); //p03 -> Phase 0 (Pre phase 1) e (Established brands)
+        const p1e = document.querySelector("#p1e");
+        const p2e = document.querySelector("#p2e");
+        const p3e = document.querySelector("#p3e");
+        const p4e = document.querySelector("#p4e");
+
+        const p0b = document.querySelector("#p0b");
+        const p1b = document.querySelector("#p1b");
+        const p2b = document.querySelector("#p2b");
+        const p3b = document.querySelector("#p3b");
+        const p4b = document.querySelector("#p4b");
+
+        const p0f = document.querySelector("#p0f");
+        const p1f = document.querySelector("#p1f");
+        const p2f = document.querySelector("#p2f");
+        const p3f = document.querySelector("#p3f");
+        const p4f = document.querySelector("#p4f");
+
+        const p0wc = document.querySelector("#p0wc");
+        const p1wc = document.querySelector("#p1wc");
+        const p2wc = document.querySelector("#p2wc");
+        const p3wc = document.querySelector("#p3wc");
+        const p4wc = document.querySelector("#p4wc");
+
+        const p0wm = document.querySelector("#p0wm");
+        const p1wm = document.querySelector("#p1wm");
+        const p2wm = document.querySelector("#p2wm");
+        const p3wm = document.querySelector("#p3wm");
+        const p4wm = document.querySelector("#p4wm");
+
+        const p0ww = document.querySelector("#p0ww");
+        const p1ww = document.querySelector("#p1ww");
+        const p2ww = document.querySelector("#p2ww");
+        const p3ww = document.querySelector("#p3ww");
+        const p4ww = document.querySelector("#p4ww");
+
+        rowWiseData.forEach((row) => {
+          // console.log(row["Program"]);
+
+          franchise = String(row["Franchise"]).trim();
+          sub = String(row["Sub Franchise"]).trim();
+          collab = String(row["Collaboration identifier"]).trim();
+
+          if (row["Program Phase"] === "Pre-phase 1") {
+            if (franchise === "Established Brands") {
+              //P0 R1
+              if (collab === "Y") {
+                p0e.innerHTML += `
+                            <div class="card1">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+              } else {
+                p0e.innerHTML += `
+                            <div class="card1">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+              }
+            } else if (franchise === "Biosimilars") {
+              //P0 R2
+              if (collab === "Y") {
+                p0b.innerHTML += `
+                            <div class="card2">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+              } else {
+                p0b.innerHTML += `
+                            <div class="card2">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+              }
+            } else if (franchise === "Fertility") {
+              //P0 R3
+              if (collab === "Y") {
+                p0f.innerHTML += `
+                            <div class="card3">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+              } else {
+                p0f.innerHTML += `
+                            <div class="card3">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+              }
+            } else if (franchise == "Women’s Health") {
+              //P0 R4
+              if (sub === "Contraception") {
+                if (collab === "Y") {
+                  p0wc.innerHTML += `
+                            <div class="card4">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+                } else {
+                  p0wc.innerHTML += `
+                            <div class="card4">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+                }
+              } else if (sub === "Maternal and Peripartum Conditions") {
+                //P0 R5
+                if (collab === "Y") {
+                  p0wm.innerHTML += `
+                            <div class="card5">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+                } else {
+                  p0wm.innerHTML += `
+                            <div class="card5">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+                }
+              } else if (sub === "Conditions Unique to Women") {
+                //P0 R6
+                if (collab === "Y") {
+                  p0ww.innerHTML += `
+                            <div class="card6">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+                } else {
+                  p0ww.innerHTML += `
+                            <div class="card6">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+                }
+              }
+            }
+            //----------------------------------------------------------------------------------------------
+          } else if (row["Program Phase"] === "Phase 1") {
+            if (franchise === "Established Brands") {
+              //P1 R1
+              if (collab === "Y") {
+                p1e.innerHTML += `
+                            <div class="card1">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+              } else {
+                p1e.innerHTML += `
+                            <div class="card1">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+              }
+            } else if (franchise === "Biosimilars") {
+              //P1 R2
+              if (collab === "Y") {
+                p1b.innerHTML += `
+                            <div class="card2">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+              } else {
+                p1b.innerHTML += `
+                            <div class="card2">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+              }
+            } else if (franchise === "Fertility") {
+              //P1 R3
+              if (collab === "Y") {
+                p1f.innerHTML += `
+                            <div class="card3">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+              } else {
+                p1f.innerHTML += `
+                            <div class="card3">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+              }
+            } else if (franchise == "Women’s Health") {
+              //P1 R4
+              if (sub === "Contraception") {
+                if (collab === "Y") {
+                  p1wc.innerHTML += `
+                            <div class="card4">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+                } else {
+                  p1wc.innerHTML += `
+                            <div class="card4">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+                }
+              } else if (sub === "Maternal and Peripartum Conditions") {
+                //P1 R5
+                if (collab === "Y") {
+                  p1wm.innerHTML += `
+                            <div class="card5">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+                } else {
+                  p1wm.innerHTML += `
+                            <div class="card5">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+                }
+              } else if (sub === "Conditions Unique to Women") {
+                //P1 R6
+                if (collab === "Y") {
+                  p1ww.innerHTML += `
+                            <div class="card6">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+                } else {
+                  p1ww.innerHTML += `
+                            <div class="card6">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+                }
+              }
+            }
+            //----------------------------------------------------------------------------------------------
+          } else if (row["Program Phase"] === "Phase 2") {
+            if (franchise === "Established Brands") {
+              //P2 R1
+              if (collab === "Y") {
+                p2e.innerHTML += `
+                            <div class="card1">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+              } else {
+                p2e.innerHTML += `
+                            <div class="card1">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+              }
+            } else if (franchise === "Biosimilars") {
+              //P2 R2
+              if (collab === "Y") {
+                p2b.innerHTML += `
+                            <div class="card2">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+              } else {
+                p2b.innerHTML += `
+                            <div class="card2">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+              }
+            } else if (franchise === "Fertility") {
+              //P2 R3
+              if (collab === "Y") {
+                p2f.innerHTML += `
+                            <div class="card3">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+              } else {
+                p2f.innerHTML += `
+                            <div class="card3">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+              }
+            } else if (franchise == "Women’s Health") {
+              //P2 R4
+              if (sub === "Contraception") {
+                if (collab === "Y") {
+                  p2wc.innerHTML += `
+                            <div class="card4">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+                } else {
+                  p2wc.innerHTML += `
+                            <div class="card4">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+                }
+              } else if (sub === "Maternal and Peripartum Conditions") {
+                //P2 R5
+                if (collab === "Y") {
+                  p2wm.innerHTML += `
+                            <div class="card5">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+                } else {
+                  p2wm.innerHTML += `
+                            <div class="card5">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+                }
+              } else if (sub === "Conditions Unique to Women") {
+                //P2 R6
+                if (collab === "Y") {
+                  p2ww.innerHTML += `
+                            <div class="card6">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+                } else {
+                  p2ww.innerHTML += `
+                            <div class="card6">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+                }
+              }
+            }
+            //------------------------------------------------------------------------------------------------
+          } else if (row["Program Phase"] === "Phase 3") {
+            if (franchise === "Established Brands") {
+              //P3 R1
+              if (collab === "Y") {
+                p3e.innerHTML += `
+                            <div class="card1">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+              } else {
+                p3e.innerHTML += `
+                            <div class="card1">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+              }
+            } else if (franchise === "Biosimilars") {
+              //P3 R2
+              if (collab === "Y") {
+                p3b.innerHTML += `
+                            <div class="card2">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+              } else {
+                p3b.innerHTML += `
+                            <div class="card2">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+              }
+            } else if (franchise === "Fertility") {
+              //P3 R3
+              if (collab === "Y") {
+                p3f.innerHTML += `
+                            <div class="card3">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+              } else {
+                p3f.innerHTML += `
+                            <div class="card3">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+              }
+            } else if (franchise == "Women’s Health") {
+              //P3 R4
+              if (sub === "Contraception") {
+                if (collab === "Y") {
+                  p3wc.innerHTML += `
+                            <div class="card4">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+                } else {
+                  p3wc.innerHTML += `
+                            <div class="card4">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+                }
+              } else if (sub === "Maternal and Peripartum Conditions") {
+                //P3 R5
+                if (collab === "Y") {
+                  p3wm.innerHTML += `
+                            <div class="card5">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+                } else {
+                  p3wm.innerHTML += `
+                            <div class="card5">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+                }
+              } else if (sub === "Conditions Unique to Women") {
+                //P3 R6
+                if (collab === "Y") {
+                  p3ww.innerHTML += `
+                            <div class="card6">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+                } else {
+                  p3ww.innerHTML += `
+                            <div class="card6">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+                }
+              }
+            }
+            //----------------------------------------------------------------------------------------------
+          } else if (row["Program Phase"] === "Filings and Approvals") {
+            if (franchise === "Established Brands") {
+              //P4 R1
+              if (collab === "Y") {
+                p4e.innerHTML += `
+                            <div class="card1">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+              } else {
+                p4e.innerHTML += `
+                            <div class="card1">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+              }
+            } else if (franchise === "Biosimilars") {
+              //P4 R2
+              if (collab === "Y") {
+                p4b.innerHTML += `
+                            <div class="card2">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+              } else {
+                p4b.innerHTML += `
+                            <div class="card2">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+              }
+            } else if (franchise === "Fertility") {
+              //P4 R3
+              if (collab === "Y") {
+                p4f.innerHTML += `
+                            <div class="card3">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+              } else {
+                p4f.innerHTML += `
+                            <div class="card3">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+              }
+            } else if (franchise == "Women’s Health") {
+              //P4 R4
+              if (sub === "Contraception") {
+                if (collab === "Y") {
+                  p4wc.innerHTML += `
+                            <div class="card4">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+                } else {
+                  p4wc.innerHTML += `
+                            <div class="card4">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+                }
+              } else if (sub === "Maternal and Peripartum Conditions") {
+                //P4 R5
+                if (collab === "Y") {
+                  p4wm.innerHTML += `
+                            <div class="card5">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+                } else {
+                  p4wm.innerHTML += `
+                            <div class="card5">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+                }
+              } else if (sub === "Conditions Unique to Women") {
+                //P4 R6
+                if (collab === "Y") {
+                  p4ww.innerHTML += `
+                            <div class="card6">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                                <img id="handshake" src="handshake.png" alt="Handshake" />
+                            </div>
+                            `;
+                } else {
+                  p4ww.innerHTML += `
+                            <div class="card6">
+                                <h4>${row["Program"]}</h3>
+                                <div class="cardDescription">${row["Program Descriptions/Indication"]}</div>
+                                <p>${row["Geography"]}</p>
+                            </div>
+                            `;
+                }
+              }
+            }
+          }
+        });
+
+        console.log("--END--");
+      };
+      extract();
+    </script>
+  </body>
+</html>
